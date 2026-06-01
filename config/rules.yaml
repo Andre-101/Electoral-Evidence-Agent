@@ -1,0 +1,241 @@
+version: "0.1.0"
+name: "rules_v0_1"
+description: "Reglas iniciales de calidad y EDA para el MVP v0.1"
+
+metadata:
+  created_for: "Agente de Evidencia Electoral"
+  scope: "MVP v0.1"
+  language: "es"
+
+quality_rules:
+  - rule_code: "NEGATIVE_VOTES"
+    enabled: true
+    category: "QUALITY"
+    severity: "CRITICAL"
+    entity_level: "SOURCE_RECORD"
+    field: "votes"
+    operator: "<"
+    threshold: 0
+    rejection: true
+    message: "El registro contiene votos negativos."
+    explanation: "Los votos no pueden ser menores que cero."
+
+  - rule_code: "INVALID_NUMERIC_VALUE"
+    enabled: true
+    category: "QUALITY"
+    severity: "HIGH"
+    entity_level: "SOURCE_RECORD"
+    field: "votes"
+    operator: "not_integer"
+    threshold: null
+    rejection: true
+    message: "El valor de votos no puede convertirse a número entero."
+    explanation: "El campo de votos debe contener un número entero válido."
+
+  - rule_code: "MISSING_TABLE"
+    enabled: true
+    category: "QUALITY"
+    severity: "CRITICAL"
+    entity_level: "SOURCE_RECORD"
+    field: "table_number"
+    operator: "is_null"
+    threshold: null
+    rejection: false
+    degrade_analysis_level: true
+    message: "El registro no contiene número de mesa."
+    explanation: "Sin número de mesa no se puede realizar análisis fino a nivel de mesa."
+
+  - rule_code: "MISSING_MUNICIPALITY"
+    enabled: true
+    category: "QUALITY"
+    severity: "HIGH"
+    entity_level: "SOURCE_RECORD"
+    field: "municipality"
+    operator: "is_null"
+    threshold: null
+    rejection: true
+    message: "El registro no contiene municipio."
+    explanation: "El municipio es necesario para ubicar territorialmente el resultado."
+
+  - rule_code: "DUPLICATED_LOGICAL_RESULT"
+    enabled: true
+    category: "QUALITY"
+    severity: "HIGH"
+    entity_level: "VOTE_RESULT"
+    fields: ["election_id", "polling_table_id", "electoral_option_id"]
+    operator: "duplicated_key_conflict"
+    threshold: null
+    rejection: true
+    message: "Existe un resultado duplicado para la misma elección, mesa y opción electoral."
+    explanation: "Un mismo resultado lógico no debe aparecer con valores conflictivos."
+
+  - rule_code: "VOTES_GREATER_THAN_CENSUS"
+    enabled: true
+    category: "QUALITY"
+    severity: "CRITICAL"
+    entity_level: "POLLING_TABLE"
+    metric: "total_votes"
+    operator: ">"
+    comparison_metric: "registered_voters"
+    threshold: null
+    rejection: false
+    message: "La mesa tiene más votos totales que votantes registrados."
+    explanation: "Los votos totales no deberían superar el censo de la mesa."
+
+  - rule_code: "UNKNOWN_RESULT_TYPE"
+    enabled: true
+    category: "QUALITY"
+    severity: "MEDIUM"
+    entity_level: "ELECTION"
+    field: "result_type"
+    operator: "equals"
+    threshold: "UNKNOWN"
+    rejection: false
+    message: "No se pudo determinar el tipo de resultado."
+    explanation: "El sistema no pudo identificar si los datos corresponden a preconteo, escrutinio o histórico."
+
+  - rule_code: "UNMATCHED_MUNICIPALITY"
+    enabled: true
+    category: "QUALITY"
+    severity: "MEDIUM"
+    entity_level: "SOURCE_RECORD"
+    field: "municipality"
+    operator: "not_in_catalog"
+    threshold: null
+    rejection: false
+    message: "El municipio no pudo mapearse al catálogo maestro."
+    explanation: "El valor territorial se conserva como no mapeado y requiere revisión de normalización."
+
+eda_rules:
+  - rule_code: "TURNOUT_GT_100"
+    enabled: true
+    category: "TURNOUT"
+    severity: "CRITICAL"
+    entity_level: "POLLING_TABLE"
+    metric: "turnout"
+    operator: ">"
+    threshold: 1.0
+    message: "La mesa presenta participación superior al 100%."
+    explanation: "La participación superior al 100% es una inconsistencia crítica o requiere revisión de fuente/censo."
+
+  - rule_code: "TURNOUT_GE_95"
+    enabled: true
+    category: "TURNOUT"
+    severity: "HIGH"
+    entity_level: "POLLING_TABLE"
+    metric: "turnout"
+    operator: ">="
+    threshold: 0.95
+    max_threshold: 1.0
+    message: "La mesa presenta participación igual o superior al 95%."
+    explanation: "Una participación muy alta puede justificar revisión contextual, especialmente si coincide con otras señales."
+
+  - rule_code: "TURNOUT_LE_20"
+    enabled: true
+    category: "TURNOUT"
+    severity: "MEDIUM"
+    entity_level: "POLLING_TABLE"
+    metric: "turnout"
+    operator: "<="
+    threshold: 0.20
+    message: "La mesa presenta participación igual o inferior al 20%."
+    explanation: "Una participación muy baja puede indicar dato incompleto, error de carga o comportamiento atípico."
+
+  - rule_code: "WINNER_SHARE_GE_95"
+    enabled: true
+    category: "CONCENTRATION"
+    severity: "HIGH"
+    entity_level: "POLLING_TABLE"
+    metric: "winner_share"
+    operator: ">="
+    threshold: 0.95
+    message: "La opción ganadora concentra al menos el 95% de los votos válidos."
+    explanation: "Una concentración extremadamente alta puede requerir comparación con mesas vecinas y contexto territorial."
+
+  - rule_code: "WINNER_SHARE_GE_90"
+    enabled: true
+    category: "CONCENTRATION"
+    severity: "MEDIUM"
+    entity_level: "POLLING_TABLE"
+    metric: "winner_share"
+    operator: ">="
+    threshold: 0.90
+    max_threshold: 0.95
+    message: "La opción ganadora concentra al menos el 90% de los votos válidos."
+    explanation: "Una concentración alta puede ser una señal contextual si aparece con otras anomalías."
+
+  - rule_code: "MARGIN_GE_80"
+    enabled: true
+    category: "CONCENTRATION"
+    severity: "HIGH"
+    entity_level: "POLLING_TABLE"
+    metric: "margin_rate"
+    operator: ">="
+    threshold: 0.80
+    message: "La diferencia entre la primera y segunda opción supera el 80% de los votos válidos."
+    explanation: "Un margen extremadamente alto puede justificar revisión frente al comportamiento del puesto o municipio."
+
+  - rule_code: "TABLE_TURNOUT_OUTLIER_STATION"
+    enabled: true
+    category: "TERRITORIAL"
+    severity: "HIGH"
+    entity_level: "POLLING_TABLE"
+    metric: "robust_z_turnout_station"
+    operator: "abs>="
+    threshold: 3.5
+    min_group_size: 5
+    comparison_group: "POLLING_STATION"
+    message: "La participación de la mesa es atípica frente a las demás mesas del mismo puesto."
+    explanation: "Se detectó desviación robusta significativa frente al contexto inmediato del puesto."
+
+  - rule_code: "TABLE_PARTY_SHARE_OUTLIER_STATION"
+    enabled: true
+    category: "TERRITORIAL"
+    severity: "HIGH"
+    entity_level: "OPTION_IN_TABLE"
+    metric: "robust_z_party_share_station"
+    operator: "abs>="
+    threshold: 3.5
+    min_group_size: 5
+    comparison_group: "POLLING_STATION"
+    message: "La participación de una opción electoral en la mesa es atípica frente al mismo puesto."
+    explanation: "La opción electoral presenta una desviación robusta significativa frente a mesas comparables del mismo puesto."
+
+  - rule_code: "TABLE_DIFF_STATION_GE_30PP"
+    enabled: true
+    category: "TERRITORIAL"
+    severity: "HIGH"
+    entity_level: "OPTION_IN_TABLE"
+    metric: "diff_vs_station"
+    operator: ">="
+    threshold: 0.30
+    min_group_size: 5
+    comparison_group: "POLLING_STATION"
+    message: "La opción electoral supera por al menos 30 puntos porcentuales el promedio del puesto."
+    explanation: "Una diferencia de 30 puntos o más frente al puesto puede indicar un comportamiento atípico."
+
+  - rule_code: "TABLE_DIFF_STATION_GE_20PP"
+    enabled: true
+    category: "TERRITORIAL"
+    severity: "MEDIUM"
+    entity_level: "OPTION_IN_TABLE"
+    metric: "diff_vs_station"
+    operator: ">="
+    threshold: 0.20
+    max_threshold: 0.30
+    min_group_size: 5
+    comparison_group: "POLLING_STATION"
+    message: "La opción electoral supera por al menos 20 puntos porcentuales el promedio del puesto."
+    explanation: "Una diferencia de 20 puntos o más frente al puesto puede justificar revisión si coincide con otras señales."
+
+sample_rules:
+  robust_z:
+    min_group_size: 5
+    on_insufficient_sample: "SKIP_AND_WARN"
+  digit_tests:
+    min_observations: 100
+    max_alert_severity: "LOW"
+    on_insufficient_sample: "SKIP_AND_WARN"
+  review_case_generation:
+    minimum_analysis_level_for_strong_case: "TABLE_LEVEL"
+    allow_limited_cases_for_aggregated_data: true

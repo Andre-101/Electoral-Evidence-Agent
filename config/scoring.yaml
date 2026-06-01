@@ -1,0 +1,140 @@
+version: "0.1.0"
+name: "scoring_v0_1"
+description: "Scoring inicial para priorización de casos de revisión electoral"
+
+score_name: "review_priority_score"
+score_range:
+  min: 0
+  max: 100
+
+severity_points:
+  LOW: 5
+  MEDIUM: 15
+  HIGH: 30
+  CRITICAL: 50
+
+category_weights:
+  QUALITY: 1.20
+  TURNOUT: 1.10
+  CONCENTRATION: 1.00
+  TERRITORIAL: 1.30
+  TEMPORAL: 0.70
+  DIGIT: 0.40
+  SPECIAL_VOTES: 0.80
+
+priority_ranges:
+  LOW: {min: 0, max: 24}
+  MEDIUM: {min: 25, max: 49}
+  HIGH: {min: 50, max: 74}
+  CRITICAL_REVIEW: {min: 75, max: 100}
+
+bonuses:
+  - bonus_code: "HIGH_TURNOUT_AND_HIGH_CONCENTRATION"
+    enabled: true
+    points: 20
+    conditions:
+      all:
+        - {alert_category: "TURNOUT", min_severity: "HIGH"}
+        - {alert_category: "CONCENTRATION", min_severity: "HIGH"}
+    explanation: "La mesa combina participación alta y concentración alta de votos."
+
+  - bonus_code: "HIGH_TURNOUT_AND_STATION_OUTLIER"
+    enabled: true
+    points: 20
+    conditions:
+      all:
+        - {alert_category: "TURNOUT", min_severity: "HIGH"}
+        - {alert_category: "TERRITORIAL", min_severity: "HIGH"}
+    explanation: "La mesa combina participación alta y comportamiento atípico frente al puesto."
+
+  - bonus_code: "HIGH_CONCENTRATION_AND_STATION_OUTLIER"
+    enabled: true
+    points: 15
+    conditions:
+      all:
+        - {alert_category: "CONCENTRATION", min_severity: "HIGH"}
+        - {alert_category: "TERRITORIAL", min_severity: "HIGH"}
+    explanation: "La mesa combina concentración alta y desviación frente al puesto."
+
+  - bonus_code: "CRITICAL_QUALITY_ALERT"
+    enabled: true
+    points: 25
+    conditions:
+      any:
+        - {alert_category: "QUALITY", min_severity: "CRITICAL"}
+    explanation: "El caso contiene al menos una alerta crítica de calidad de datos."
+
+  - bonus_code: "TEMPORAL_AND_TERRITORIAL_ALERT"
+    enabled: true
+    points: 10
+    conditions:
+      all:
+        - {alert_category: "TEMPORAL", min_severity: "MEDIUM"}
+        - {alert_category: "TERRITORIAL", min_severity: "MEDIUM"}
+    explanation: "El caso combina señal temporal y señal territorial."
+
+  - bonus_code: "THREE_OR_MORE_HIGH_ALERTS"
+    enabled: true
+    points: 20
+    conditions:
+      min_alerts: {severity: "HIGH", count: 3}
+    explanation: "El caso acumula tres o más alertas de severidad alta."
+
+  - bonus_code: "DIGIT_ALERT_WITH_HIGH_ALERT"
+    enabled: true
+    points: 5
+    conditions:
+      all:
+        - {alert_category: "DIGIT", min_severity: "LOW"}
+        - {any_alert_min_severity: "HIGH"}
+    explanation: "Existe una señal de dígitos acompañada por otra alerta fuerte."
+
+penalties:
+  - penalty_code: "SMALL_REGISTERED_VOTERS"
+    enabled: true
+    points: -20
+    condition: {metric: "registered_voters", operator: "<", threshold: 50}
+    explanation: "El censo de la mesa es pequeño, lo que reduce la confiabilidad estadística."
+
+  - penalty_code: "LOW_TOTAL_VOTES"
+    enabled: true
+    points: -20
+    condition: {metric: "total_votes", operator: "<", threshold: 30}
+    explanation: "La cantidad total de votos es baja, lo que puede amplificar porcentajes extremos."
+
+  - penalty_code: "SMALL_COMPARISON_GROUP"
+    enabled: true
+    points: -15
+    condition: {metric: "comparison_group_size", operator: "<", threshold: 5}
+    explanation: "El grupo de comparación tiene menos de cinco unidades comparables."
+
+  - penalty_code: "MISSING_REGISTERED_VOTERS"
+    enabled: true
+    points: -10
+    condition: {metric: "registered_voters", operator: "is_null", threshold: null}
+    explanation: "No existe censo disponible para calcular participación."
+
+  - penalty_code: "UNKNOWN_RESULT_TYPE"
+    enabled: true
+    points: -5
+    condition: {field: "result_type", operator: "equals", threshold: "UNKNOWN"}
+    explanation: "El tipo de resultado no fue identificado."
+
+statistical_confidence:
+  HIGH:
+    min_comparison_group_size: 20
+    requires_registered_voters: true
+  MEDIUM:
+    min_comparison_group_size: 10
+    requires_registered_voters: true
+  LOW:
+    min_comparison_group_size: 5
+    requires_registered_voters: false
+  INSUFFICIENT:
+    max_comparison_group_size: 4
+
+case_generation:
+  enabled: true
+  primary_entity_level: "POLLING_TABLE"
+  minimum_score_to_create_case: 25
+  default_status: "OPEN"

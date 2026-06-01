@@ -1,0 +1,60 @@
+version: "0.1.0"
+name: "elections_config_v0_1"
+
+default_country:
+  iso_code: "COL"
+  name: "Colombia"
+
+pilot_election:
+  election_key: "COL_2022_PRES_R1_SCRUTINY"
+  country_iso_code: "COL"
+  period_year: 2022
+  period_name: "Elecciones Colombia 2022"
+  election_type: "PRESIDENTIAL"
+  result_type: "SCRUTINY"
+  election_round: 1
+  election_date: "2022-05-29"
+  name: "Colombia Presidencia 2022 - Primera vuelta - Escrutinio"
+  expected_analysis_level: "TABLE_LEVEL"
+  execution_mode: "EXPLORATORY"
+
+  data_expectations:
+    requires_votes: true
+    expects_table_number: true
+    expects_polling_station: true
+    expects_municipality: true
+    expects_department: true
+    expects_registered_voters: false
+    expects_candidate: true
+    expects_party: true
+    expects_blank_votes: true
+    expects_null_votes: true
+    expects_unmarked_votes: false
+    expects_timestamp: false
+
+  analysis_behavior:
+    if_missing_table_number: "DEGRADE_ANALYSIS_LEVEL"
+    if_missing_registered_voters: "SKIP_TURNOUT_AND_WARN"
+    if_missing_candidate: "ALLOW_PARTY_LEVEL_ANALYSIS"
+    if_missing_party: "ALLOW_CANDIDATE_LEVEL_ANALYSIS"
+    if_only_municipality_level: "AGGREGATED_LOW_RESOLUTION"
+
+analysis_levels:
+  TABLE_LEVEL:
+    rank: 5
+    description: "Datos disponibles a nivel de mesa."
+  STATION_LEVEL:
+    rank: 4
+    description: "Datos disponibles a nivel de puesto."
+  MUNICIPALITY_LEVEL:
+    rank: 3
+    description: "Datos disponibles a nivel de municipio."
+  DEPARTMENT_LEVEL:
+    rank: 2
+    description: "Datos disponibles a nivel de departamento."
+  NATIONAL_ONLY:
+    rank: 1
+    description: "Solo totales nacionales."
+  UNUSABLE:
+    rank: 0
+    description: "Dataset insuficiente para análisis."

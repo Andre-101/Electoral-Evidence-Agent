@@ -1,0 +1,26 @@
+version: "0.1.0"
+name: "column_aliases_v0_1"
+
+canonical_fields:
+  department:
+    aliases: ["departamento", "depto", "nom_depto", "nombre_departamento", "department"]
+  municipality:
+    aliases: ["municipio", "mpio", "nom_mpio", "nombre_municipio", "municipality"]
+  polling_station:
+    aliases: ["puesto", "puesto_votacion", "nombre_puesto", "polling_station", "station"]
+  table_number:
+    aliases: ["mesa", "numero_mesa", "nro_mesa", "table", "table_number"]
+  candidate:
+    aliases: ["candidato", "nombre_candidato", "candidate"]
+  party:
+    aliases: ["partido", "agrupacion", "agrupacion_politica", "movimiento", "party"]
+  electoral_option:
+    aliases: ["opcion", "opcion_electoral", "candidato", "partido", "option"]
+  votes:
+    aliases: ["votos", "cantidad_votos", "total_votos", "votes"]
+  registered_voters:
+    aliases: ["censo", "potencial", "potencial_votantes", "registered_voters"]
+  zone:
+    aliases: ["zona", "zone"]
+  report_timestamp:
+    aliases: ["fecha_reporte", "hora_reporte", "timestamp", "reported_at"]

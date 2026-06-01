@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; color: #172033; line-height: 1.45; }
+    h1, h2, h3 { color: #0f172a; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; background: #e0f2fe; color: #075985; font-weight: bold; }
+    .section { margin-top: 28px; }
+    .card { border: 1px solid #dbe3ef; border-radius: 12px; padding: 16px; margin: 12px 0; background: #f8fafc; }
+    .human-card { border: 1px solid #bae6fd; border-radius: 14px; padding: 18px; margin: 14px 0; background: #f0f9ff; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border: 1px solid #dbe3ef; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #eef6ff; }
+    .disclaimer { background: #fff7ed; border: 1px solid #fed7aa; padding: 14px; border-radius: 10px; }
+    .small { color: #64748b; font-size: 0.9em; }
+    pre { white-space: pre-wrap; font-family: Arial, sans-serif; }
+    details { margin-top: 14px; }
+    summary { cursor: pointer; color: #075985; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <p class="small">Generado por {{ generated_by }} — {{ generated_at }}</p>
+
+  <div class="human-card">
+    <h2>Información del caso</h2>
+    <p><strong>Ubicación:</strong> {{ readable_case.entity.location if readable_case.entity.location else "No disponible" }}</p>
+    <p><strong>Puesto:</strong> {{ readable_case.entity.polling_station if readable_case.entity.polling_station else "No disponible" }}</p>
+    <p><strong>Mesa:</strong> {{ readable_case.entity.table_number if readable_case.entity.table_number else readable_case.entity.label }}</p>
+    {% if readable_case.entity.registered_voters %}
+    <p><strong>Censo / votantes registrados:</strong> {{ readable_case.entity.registered_voters }}</p>
+    {% endif %}
+    {% if readable_case.electoral_option %}
+    <p><strong>Opción electoral:</strong> {{ readable_case.electoral_option.label }}</p>
+    {% endif %}
+    <p><strong>Prioridad:</strong> <span class="badge">{{ review_case.priority }}</span></p>
+    <p><strong>Score de revisión:</strong> {{ review_case.review_priority_score }}</p>
+    <p><strong>Confianza estadística:</strong> {{ review_case.statistical_confidence }}</p>
+  </div>
+
+  <details>
+    <summary>Ver trazabilidad técnica del caso</summary>
+    <div class="card">
+      <p><strong>Review case ID:</strong> {{ review_case.review_case_id }}</p>
+      <p><strong>Entidad técnica:</strong> {{ review_case.entity_level }} / {{ review_case.entity_id }}</p>
+      {% if review_case.electoral_option_id %}
+      <p><strong>Opción técnica:</strong> {{ review_case.electoral_option_id }}</p>
+      {% endif %}
+      <p><strong>Anomaly score ID:</strong> {{ review_case.anomaly_score_id }}</p>
+    </div>
+  </details>
+
+  <div class="section">
+    <h2>Resumen ejecutivo</h2>
+    <pre>{{ dossier.executive_summary }}</pre>
+  </div>
+
+  <div class="section">
+    <h2>Resumen técnico</h2>
+    <pre>{{ dossier.technical_summary }}</pre>
+  </div>
+
+  <div class="section">
+    <h2>Evidencia estructurada</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Fuerza</th>
+          <th>Métrica</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in evidence_items %}
+        <tr>
+          <td>{{ item.evidence_type }}</td>
+          <td>{{ item.strength }}</td>
+          <td>{{ item.metric_name }}={{ item.metric_value }}</td>
+          <td>{{ item.description }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Componentes del score</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Componente</th>
+          <th>Puntos</th>
+          <th>Explicación</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in score_components %}
+        <tr>
+          <td>{{ item.component_type }}</td>
+          <td>{{ item.component_name }}</td>
+          <td>{{ item.points }}</td>
+          <td>{{ item.explanation }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <details class="section">
+    <summary>Ver trazabilidad de archivos y versiones</summary>
+    <div class="card">
+      <p><strong>Pipeline:</strong> {{ traceability.pipeline_version }}</p>
+      <p><strong>Rules:</strong> {{ traceability.rules_version }}</p>
+      <p><strong>Scoring:</strong> {{ traceability.scoring_version }}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Archivo</th>
+            <th>Hash</th>
+            <th>Fuente</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for source in traceability.source_files %}
+          <tr>
+            <td>{{ source.file_name }}</td>
+            <td>{{ source.file_hash }}</td>
+            <td>{{ source.source_name }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <div class="section">
+    <h2>Limitaciones</h2>
+    <pre>{{ dossier.limitations }}</pre>
+  </div>
+
+  <div class="section">
+    <h2>Siguientes pasos recomendados</h2>
+    <pre>{{ dossier.recommended_next_steps }}</pre>
+  </div>
+
+  <div class="section disclaimer">
+    <strong>Declaración metodológica:</strong>
+    <p>Este reporte reúne señales atípicas y evidencia estructurada para revisión. No concluye fraude electoral ni reemplaza revisión humana/documental.</p>
+  </div>
+</body>
+</html>

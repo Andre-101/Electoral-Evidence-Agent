@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; color: #172033; }
+    h1, h2 { color: #0f172a; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid #dbe3ef; border-radius: 12px; padding: 16px; background: #f8fafc; }
+    .number { font-size: 2rem; font-weight: bold; color: #075985; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border: 1px solid #dbe3ef; padding: 8px; text-align: left; }
+    th { background: #eef6ff; }
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <p>Resumen ejecutivo generado para una ejecución de ingesta.</p>
+
+  <div class="grid">
+    <div class="card"><div class="number">{{ counts.review_cases }}</div><div>Casos de revisión</div></div>
+    <div class="card"><div class="number">{{ counts.eda_alerts }}</div><div>Alertas EDA</div></div>
+    <div class="card"><div class="number">{{ counts.quality_alerts }}</div><div>Alertas de calidad</div></div>
+  </div>
+
+  <h2>Casos priorizados</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Caso</th>
+        <th>Entidad</th>
+        <th>Score</th>
+        <th>Prioridad</th>
+        <th>Resumen</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for case in review_cases %}
+      <tr>
+        <td>{{ case.review_case_id }}</td>
+        <td>{{ case.entity_level }} / {{ case.entity_id }}</td>
+        <td>{{ case.review_priority_score }}</td>
+        <td>{{ case.priority }}</td>
+        <td>{{ case.case_summary }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <p><strong>Nota:</strong> Este reporte prioriza revisión humana. No concluye fraude electoral.</p>
+</body>
+</html>
