@@ -147,7 +147,6 @@ docker compose exec api pytest
 ## Documentation
 
 - [Project report](docs/project_report.md)
-- [Video script](docs/video_script.md)
 - [Setup](docs/setup.md)
 - [Reports](docs/reports.md)
 - [API](docs/api.md)
