@@ -1,5 +1,10 @@
 # Análisis de señales electorales atípicas con datos simulados
 
+## Evidencia de entrega
+
+- Video de demostración: https://andre-101.github.io/Electoral-Evidence-Agent/docs-video/
+- Repositorio: https://github.com/Andre-101/Electoral-Evidence-Agent
+
 ## 1. Contexto del problema
 
 Los resultados electorales pueden contener múltiples registros de votos, opciones electorales, mesas y territorios. Cuando el volumen de información aumenta, identificar comportamientos que sobresalen frente al contexto puede ser difícil si se hace de forma manual.
