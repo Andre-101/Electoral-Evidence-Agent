@@ -4,6 +4,13 @@ Electoral Evidence Agent is a functional application for analyzing structured el
 
 The system does not determine or confirm electoral fraud. It highlights patterns in the loaded data and explains them in neutral language.
 
+## Final delivery
+
+- Video demonstration: https://andre-101.github.io/Electoral-Evidence-Agent/docs-video/
+- Project report: [docs/project_report.md](docs/project_report.md)
+- Application dashboard: http://localhost:8501
+- API documentation: http://localhost:8000/docs
+
 ## What it does
 
 ```text
