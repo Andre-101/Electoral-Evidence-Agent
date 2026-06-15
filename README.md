@@ -6,8 +6,8 @@ The system does not determine or confirm electoral fraud. It highlights patterns
 
 ## Final delivery
 
-- GitHub Pages: https://andre-101.github.io/Electoral-Evidence-Agent/docs-video/
 - Video demonstration: embedded in the GitHub Pages site
+- GitHub Pages: https://andre-101.github.io/Electoral-Evidence-Agent/docs-video/
 - Final report (PDF): [docs/informe-final.pdf](docs/informe-final.pdf)
 - Project report: [docs/project_report.md](docs/project_report.md)
 - Application dashboard: http://localhost:8501
