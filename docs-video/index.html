@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Video de demostración | Electoral Evidence Agent</title>
+  <style>
+    :root {
+      --bg: #071224;
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #0891b2;
+      --line: #dbeafe;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #071224 0%, #0f2742 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 980px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 34px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.15;
+      color: #071224;
+    }
+
+    .lead {
+      color: #334155;
+      margin: 0 0 24px 0;
+      max-width: 780px;
+      font-size: 1.05rem;
+    }
+
+    video {
+      width: 100%;
+      max-width: 900px;
+      border-radius: 14px;
+      background: #000;
+      display: block;
+      margin: 22px auto;
+      border: 1px solid var(--line);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 0;
+    }
+
+    footer {
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+      font-size: 0.85rem;
+      margin: 18px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card">
+      <div class="eyebrow">Video de demostración</div>
+      <h1>Análisis de señales electorales atípicas</h1>
+      <p class="lead">
+        Presentación breve de la solución, el flujo de análisis y el reporte visual generado con datos simulados.
+      </p>
+
+      <video controls preload="metadata">
+        <source src="media/demo.mp4" type="video/mp4">
+        Tu navegador no soporta la reproducción de video HTML5.
+      </video>
+
+      <p class="note">
+        Presiona reproducir para ver el video con sonido dentro de la página.
+      </p>
+    </section>
+
+    <footer>
+      Electoral Evidence Agent
+    </footer>
+  </main>
+</body>
+</html>
